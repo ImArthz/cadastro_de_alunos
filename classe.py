@@ -23,7 +23,6 @@ class Aluno(Pessoa):
         super().__init__(nome, idade)
         self.__matricula = matricula
         self.informacoes = []
-        self.disciplinas = {}
 
     def Consultar_pessoa(self):
         return f'Nome: {self.getNome()}, Idade: {self.getIdade()}'
@@ -34,39 +33,110 @@ class Aluno(Pessoa):
     def getMatricula(self):
         return self.__matricula
 
-    def inserir_info(self, info):
-        self.informacoes.append(info)
-
     def adicionar_disciplina(self, nome_disciplina, professor, notas, informacoes):
-        self.disciplinas[nome_disciplina] = {
-            'Professor': professor,
-            'Notas': notas,
-            'Informacoes': informacoes
-        }
+        nova_disciplina = Disciplina(nome_disciplina, professor, notas, informacoes)
+        self.informacoes.append(nova_disciplina)
 
     def imprimir_todas_informacoes(self):
         print("-----------------------------------------------")
-        print(f"Nome: {self.getNome()}")
-        print(f"Matrícula: {self.getMatricula()}")
-        print(f"Idade: {self.getIdade()}")
-        print("Disciplinas:")
-        for disciplina, info in self.disciplinas.items():
-            print(f"  Disciplina: {disciplina}")
-            print(f"  Professor: {info['Professor']}")
-            print(f"  Notas: {info['Notas']}")
-            print(f"  Informações: {info['Informacoes']}")
-            print("-----------------------------------------------")
+        print(f"Nome : \t{self.getNome()} \nMatrícula: \t\t{self.getMatricula()} \nIdade: \t\t{self.getIdade()} ")
+        print("-----------------------------------------------")
+        for disciplina in self.informacoes:
+            disciplina.imprimir_informacoes()
+
+    def atualizar_informacoes(self):
+        while True:
+            print("1- Atualizar informações pessoais")
+            print("2- Atualizar informações de disciplina")
+            print("3- Atualizar ambas")
+            print("4- Sair")
+            escolha = input("Digite a opção desejada: ")
+            if escolha == "1":
+                self.atualizar_pessoais()
+            elif escolha == "2":
+                self.atualizar_disciplina()
+            elif escolha == "3":
+                self.atualizar_pessoais()
+                self.atualizar_disciplina()
+            elif escolha == "4":
+                break
+            else:
+                print("Opção inválida. Tente novamente.")
+
+    def atualizar_pessoais(self):
+        try:
+            while True:
+                temp_aluno_nome = input("Digite o nome atualizado do aluno: ")
+                if not any(aluno.getNome() == temp_aluno_nome for aluno in alunos):
+                    break
+                else:
+                    print("Nome já existe na lista. Por favor, escolha outro nome.")
+
+            while True:
+                temp_aluno_idade = int(input("Digite a idade atualizada do aluno: "))
+                if temp_aluno_idade < 0 or temp_aluno_idade > 121:
+                    raise ValueError("Idade inválida. A idade deve estar entre 0 e 120 anos.")
+                break  # Saia do loop se a entrada for válida
+
+            self.__nome = temp_aluno_nome
+            self.__idade = temp_aluno_idade
+            print("Informações pessoais atualizadas com sucesso!")
+
+        except Exception as error:
+            print(f"Erro ao atualizar informações pessoais: {str(error)}")
+
+    def atualizar_disciplina(self):
+        try:
+            while True:
+                disciplina_atualizar = input("Digite o nome da disciplina a ser atualizada: ")
+                disciplina_existente = next((disc for disc in self.informacoes if disc.nome_disciplina == disciplina_atualizar), None)
+                if disciplina_existente:
+                    notas = input("Digite as notas atualizadas (separadas por vírgula): ").split(',')
+                    informacoes = input("Digite informações adicionais atualizadas: ")
+                    disciplina_existente.notas = notas
+                    disciplina_existente.informacoes = informacoes
+                    print("Informações da disciplina atualizadas com sucesso!")
+                    break
+                else:
+                    print("Disciplina não encontrada. Tente novamente.")
+
+        except Exception as error:
+            print(f"Erro ao atualizar informações da disciplina: {str(error)}")
+
+# Classe Disciplina
+class Disciplina:
+    def __init__(self, nome_disciplina, professor, notas, informacoes):
+        self.nome_disciplina = nome_disciplina
+        self.professor = professor
+        self.notas = notas
+        self.informacoes = informacoes
+
+    def imprimir_informacoes(self):
+        print(f"Disciplina: \t{self.nome_disciplina}")
+        print(f"Professor: \t{self.professor.getNome()}")
+        print(f"Notas: \t{', '.join(self.notas)}")
+        print(f"Informações: \t{self.informacoes}")
 
 # Classe Professor (Pessoa <- Pai)
 class Professor(Pessoa):
-    def __init__(self, nome, idade, salario, formacao_academica):
+    def __init__(self, nome, idade, salario, formacao):
         super().__init__(nome, idade)
-        self.salario = salario
-        self.formacao_academica = formacao_academica
+        self.__salario = salario
+        self.__formacao = formacao
 
     def Consultar_pessoa(self):
-        return f'Nome: {self.getNome()}, Idade: {self.getIdade()}, Salário: {self.salario}, Formação: {self.formacao_academica}'
+        return f'Nome: {self.getNome()}, Idade: {self.getIdade()}'
 
+    def Consultar_professor(self):
+        return f'{super().Consultar_pessoa()}, Salário: {self.getSalario()}R$, Formação: {self.getFormacao()}'
+
+    def getSalario(self):
+        return self.__salario
+
+    def getFormacao(self):
+        return self.__formacao
+
+# Classe Gerenciadora
 class Gerenciadora:
     def __init__(self, alunos, professores):
         self.alunos = alunos
@@ -132,33 +202,11 @@ class Gerenciadora:
             for aluno in alunos:
                 if aluno.getMatricula() == matricula:
                     temp_aluno_matricula = aluno.getMatricula()
-                    while True:
-                        temp_aluno_nome = input("Digite o nome atualizado do aluno: ")
-                        if not any(aluno.getNome() == temp_aluno_nome for aluno in alunos):
-                            break
-                        else:
-                            print("Nome já existe na lista. Por favor, escolha outro nome.")
-                    while True:
-                        temp_aluno_idade = int(input("Digite a idade atualizada do aluno: "))
-                        if temp_aluno_idade < 0 or temp_aluno_idade > 121:
-                            raise ValueError("Idade inválida. A idade deve estar entre 0 e 120 anos.")
-                        break  # Saia do loop se a entrada for válida
-                    aluno_atualizado = Aluno(temp_aluno_nome, temp_aluno_idade, temp_aluno_matricula)
-                    alunos.remove(aluno)
-                    alunos.append(aluno_atualizado)
-                    print("Aluno atualizado com sucesso!")
+                    aluno.atualizar_informacoes()  # Chama a função de atualização
                     encontrado = True
                     break
             if not encontrado:
                 print("Não existe nenhum aluno com este número de matrícula.")
-                while True:
-                    escolha = input("Deseja visualizar os alunos matriculados?\n\tSim\n\tNão: ").lower()
-                    if escolha in ('sim', 's'):
-                        Gerenciadora.Listar_alunos(alunos)
-                    elif escolha in ('não', 'n'):
-                        break
-                    else:
-                        print("Escolha inválida.")
         except Exception as error:
             print(f"Erro ao atualizar aluno: {str(error)}")
 
@@ -193,39 +241,42 @@ class Gerenciadora:
             encontrado = False
             for aluno in alunos:
                 if aluno.getMatricula() == matricula:
+                    encontrado = True
                     nome_disciplina = input("Digite o nome da disciplina: ")
                     professor = input("Digite o nome do professor: ")
-                    notas = input("Digite as notas da disciplina (separadas por vírgula): ").split(',')
-                    informacoes = input("Digite informações sobre a disciplina: ")
+                    notas = input("Digite as notas (separadas por vírgula): ").split(',')
+                    informacoes = input("Digite informações adicionais: ")
 
-                    aluno.adicionar_disciplina(nome_disciplina, professor, notas, informacoes)
-                    encontrado = True
+                    # Verificar se o professor já existe na lista de professores
+                    professor_existente = next((p for p in professores if p.getNome() == professor), None)
+                    if professor_existente is None:
+                        print("Professor não encontrado. Você precisa cadastrar o professor primeiro.")
+                        Gerenciadora.Criar_professor(professores)
+                        professor_existente = next((p for p in professores if p.getNome() == professor), None)
+
+                    aluno.adicionar_disciplina(nome_disciplina, professor_existente, notas, informacoes)
                     print("Informações da disciplina adicionadas com sucesso!")
-                    break
+
             if not encontrado:
-                print("Não existe nenhum aluno com este número de matrícula.")
+                print("Não existe nenhum aluno com esta matrícula.")
+
         except Exception as error:
-            print(f"Erro ao inserir informações da disciplina: {str(error)}")
+            print(f"Erro ao inserir informações do aluno: {str(error)}")
 
     @staticmethod
     def Imprimir_todos_alunos(alunos):
-        if not alunos:
-            print("Não existem alunos cadastrados.")
-        else:
-            print("Lista de Alunos:")
-            for aluno in alunos:
-                aluno.imprimir_todas_informacoes()
+        for aluno in alunos:
+            aluno.imprimir_todas_informacoes()
 
     @staticmethod
     def Criar_professor(professores):
         try:
             while True:
                 temp_professor_nome = input("Digite o nome do professor: ")
-
                 if not any(professor.getNome() == temp_professor_nome for professor in professores):
                     break
                 else:
-                    print("Nome já existe na lista. Por favor, escolha outro nome.")
+                    print("Nome de professor já existe na lista. Por favor, escolha outro nome.")
 
             while True:
                 temp_professor_idade = int(input("Digite a idade do professor: "))
@@ -244,17 +295,68 @@ class Gerenciadora:
             novo_professor = Professor(temp_professor_nome, temp_professor_idade, temp_professor_salario, temp_professor_formacao)
             professores.append(novo_professor)
             print("Professor cadastrado com sucesso!")
+
         except Exception as error:
             print(f"Erro ao cadastrar professor: {str(error)}")
 
     @staticmethod
     def Listar_professores(professores):
-        if not professores:
-            print("Não existem professores cadastrados.")
-        else:
-            print("Lista de Professores:")
+        print("--------------------------------------------------")
+        print("\t\t\t LISTA DE TODOS OS PROFESSORES ")
+        print("--------------------------------------------------")
+        for professor in professores:
+            print(professor.Consultar_professor())
+
+    @staticmethod
+    def Atualizar_professor(nome_professor, professores):
+        try:
+            encontrado = False
             for professor in professores:
-                print(professor.Consultar_pessoa())
+                if professor.getNome() == nome_professor:
+                    temp_professor_nome = professor.getNome()
+                    while True:
+                        temp_professor_idade = int(input("Digite a idade atualizada do professor: "))
+                        if temp_professor_idade < 0 or temp_professor_idade > 121:
+                            raise ValueError("Idade inválida. A idade deve estar entre 0 e 120 anos.")
+                        break  # Saia do loop se a entrada for válida
+
+                    while True:
+                        temp_professor_salario = float(input("Digite o salário atualizado do professor: "))
+                        if temp_professor_salario < 0:
+                            raise ValueError("Salário inválido. O salário não pode ser negativo.")
+                        break  # Saia do loop se a entrada for válida
+
+                    temp_professor_formacao = input("Digite a formação acadêmica atualizada do professor: ")
+
+                    professor_atualizado = Professor(temp_professor_nome, temp_professor_idade, temp_professor_salario, temp_professor_formacao)
+                    professores.remove(professor)
+                    professores.append(professor_atualizado)
+                    print("Professor atualizado com sucesso!")
+                    encontrado = True
+                    break
+
+            if not encontrado:
+                print("Não existe nenhum professor com este nome.")
+
+        except Exception as error:
+            print(f"Erro ao atualizar professor: {str(error)}")
+
+    @staticmethod
+    def Excluir_professor(nome_professor, professores):
+        try:
+            encontrado = False
+            for professor in professores:
+                if professor.getNome() == nome_professor:
+                    professores.remove(professor)
+                    encontrado = True
+                    print("Professor excluído com sucesso!")
+                    break  # Saia do loop após encontrar e excluir o professor
+
+            if not encontrado:
+                print("Não existe nenhum professor com este nome.")
+
+        except Exception as error:
+            print(f"Erro ao excluir professor: {str(error)}")
 
     @staticmethod
     def Menu(alunos, professores):
@@ -266,15 +368,17 @@ class Gerenciadora:
             print("2- Buscar Aluno")
             print("3- Atualizar Aluno")
             print("4- Excluir Aluno")
-            print("5- Inserir informações do Aluno")
+            print("5- Inserir informações de Aluno")
             print("6- Imprimir todos os Alunos")
             print("7- Criar Professor")
             print("8- Listar Professores")
-            print("9- Sair")
+            print("9- Atualizar Professor")
+            print("10- Excluir Professor")
+            print("11- Sair")
 
             try:
                 escolha = int(input("Digite o número da opção desejada: "))
-                if escolha not in (1, 2, 3, 4, 5, 6, 7, 8, 9):
+                if escolha not in range(1, 12):
                     raise ValueError("Opção inválida")
             except ValueError as e:
                 print(f"Erro: {e}")
@@ -289,12 +393,8 @@ class Gerenciadora:
                     if aux in ('nao', 'n', 'não'):
                         continue  # Volte ao início do loop
                     elif aux in ('sim', 's'):
-                        encontrado = Gerenciadora.Consultar_aluno(temp_matricula, alunos)
-                        if encontrado:
-                            break  # Saia do loop após consultar o aluno
-                        else:
-                            print("Aluno não encontrado.")
-                            break  # Saia do loop também se o aluno não for encontrado
+                        Gerenciadora.Consultar_aluno(temp_matricula, alunos)
+                        break  # Saia do loop após consultar o aluno
                     else:
                         print("Opção inválida. Por favor, digite 'S' ou 'N'.")
             elif escolha == 3:
@@ -327,23 +427,62 @@ class Gerenciadora:
                         print("Opção inválida. Por favor, digite 'S' ou 'N'.")
             elif escolha == 5:
                 while True:
-                    temp_matricula3 = input("Digite a matrícula do aluno para inserir informações da disciplina: ")
+                    temp_matricula3 = input("Digite a matrícula do aluno para inserir informações: ")
                     aux = input(f"Você digitou {temp_matricula3}. Está correto? (S/N) ").lower()
                     if aux in ('nao', 'n', 'não'):
                         continue  # Volte ao início do loop
                     elif aux in ('sim', 's'):
                         Gerenciadora.Inserir_informacoes_aluno(temp_matricula3, alunos)
-                        break  # Saia do loop após inserir informações
+                        break  # Saia do loop após inserir as informações
                     else:
                         print("Opção inválida. Por favor, digite 'S' ou 'N'.")
             elif escolha == 6:
-                Gerenciadora.Imprimir_todos_alunos(alunos)
+                if not alunos:
+                    print("Não há alunos cadastrados.")
+                else:
+                    Gerenciadora.Imprimir_todos_alunos(alunos)
             elif escolha == 7:
                 Gerenciadora.Criar_professor(professores)
             elif escolha == 8:
-                Gerenciadora.Listar_professores(professores)
+                if not professores:
+                    print("Não há professores cadastrados.")
+                else:
+                    Gerenciadora.Listar_professores(professores)
             elif escolha == 9:
+                while True:
+                    nome_professor = input("Digite o nome do professor que deseja atualizar: ")
+                    aux = input(f"Você digitou {nome_professor}. Está correto? (S/N) ").lower()
+                    if aux in ('nao', 'n', 'não'):
+                        continue  # Volte ao início do loop
+                    elif aux in ('sim', 's'):
+                        Gerenciadora.Atualizar_professor(nome_professor, professores)
+                        break  # Saia do loop após atualizar o professor
+                    else:
+                        print("Opção inválida. Por favor, digite 'S' ou 'N'.")
+            elif escolha == 10:
+                while True:
+                    nome_professor = input("Digite o nome do professor que deseja excluir: ")
+                    aux = input(f"Você digitou {nome_professor}. Está correto? (S/N) ").lower()
+                    if aux in ('nao', 'n', 'não'):
+                        continue  # Volte ao início do loop
+                    elif aux in ('sim', 's'):
+                        escolha_aux = input(f"Você está prestes a excluir o professor {nome_professor}. Tem certeza? (S/N)").lower()
+                        if escolha_aux in ('nao', 'n', 'não'):
+                            continue
+                        elif escolha_aux in ('sim', 's'):
+                            Gerenciadora.Excluir_professor(nome_professor, professores)
+                            break  # Saia do loop após excluir o professor
+                        else:
+                            print("Opção inválida. Por favor, digite 'S' ou 'N'.")
+                    else:
+                        print("Opção inválida. Por favor, digite 'S' ou 'N'.")
+            elif escolha == 11:
                 print("Saindo do programa...")
+                print("-------------------------------------------------------")
+                print("\t\t\tPrograma feito por Arthur De Oliveira Mendonça ")
+                print("-------------------------------------------------------")
+                print("\tLink github : https://github.com/ImArthz/cadastro_de_alunos")
+                print("-------------------------------------------------------")
                 break  # Saia do loop principal e encerre o programa
 
 if __name__ == "__main__":
