@@ -1,6 +1,10 @@
 # Sistema de Gerenciamento de Alunos e Professores
 
-![GitHub](https://img.shields.io/github/license/seu-usuario/seu-repositorio)
+## Licença
+
+Este projeto está licenciado sob a [Licença MIT](LICENSE.txt).
+
+[![GitHub License](https://img.shields.io/github/license/Imarthz/cadastro_de_alunos)](https://github.com/Imarthz/cadastro_de_alunos/blob/main/LICENSE.txt)
 
 Este é um sistema de gerenciamento de alunos e professores desenvolvido em Python que permite a criação, consulta, atualização e exclusão de registros de alunos e professores. Além disso, o sistema permite adicionar informações específicas das disciplinas dos alunos.
 
