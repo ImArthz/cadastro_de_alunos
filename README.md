@@ -1,8 +1,6 @@
 # Sistema de Gerenciamento de Alunos e Professores
 
-## Licença
 
-Este projeto está licenciado sob a [Licença MIT](License.txt).
 
 [![GitHub License](https://img.shields.io/github/license/Imarthz/cadastro_de_alunos)](https://github.com/Imarthz/cadastro_de_alunos/blob/main/License.txt)
 
@@ -75,7 +73,9 @@ Contribuições são bem-vindas! Se você deseja contribuir para este projeto, s
 
 ## Licença
 
-Este projeto é licenciado sob a Licença MIT - consulte o arquivo [LICENSE](LICENSE) para obter detalhes.
+Este projeto está licenciado sob a [Licença MIT](License.txt). - consulte o arquivo para obter detalhes.
+
+
 
 ---
 
