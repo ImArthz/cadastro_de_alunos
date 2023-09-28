@@ -18,19 +18,19 @@ Este é um sistema de gerenciamento de alunos e professores desenvolvido em Pyth
 1. **Clone o repositório:**
 
     ```bash
-    git clone https://github.com/seu-usuario/seu-repositorio.git
+    git clone https://github.com/Imarthz/cadastro_de_alunos.git
     ```
 
 2. **Navegue até o diretório do projeto:**
 
     ```bash
-    cd seu-repositorio
+    cd cadastro_de_alunos
     ```
 
 3. **Execute o arquivo principal:**
 
     ```bash
-    python main.py
+    python classe.py
     ```
 
 4. **Siga as instruções no console para interagir com o sistema.**
